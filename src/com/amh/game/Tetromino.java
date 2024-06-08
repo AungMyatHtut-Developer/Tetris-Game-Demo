@@ -2,6 +2,8 @@ package com.amh.game;
 
 import java.awt.*;
 
+import static com.amh.game.CollisionManager.*;
+
 public class Tetromino {
 
     private Game game;
@@ -11,7 +13,7 @@ public class Tetromino {
     private boolean isDisapper = false;
 
 
-    public int aniTick, aniSpeed = 30, gravity = 20, movement = 20;
+    public int aniTick, aniSpeed = 60, gravity = 20, movement = 20;
 
     public Tetromino(int x, int y, Block block, Game game) {
         this.x = x;
@@ -143,11 +145,6 @@ public class Tetromino {
 
     public void updatePosition() {
 
-        aniTick++;
-        if (aniTick >= aniSpeed) {
-            this.y += gravity;
-            aniTick=0;
-        }
 
 
         if (this.x <= 100) {
@@ -159,28 +156,65 @@ public class Tetromino {
         }
 
 
-        if (this.y >= 460 - this.height) {
-            this.y = 460-this.height;
+        // Check if the Tetromino can move down
+        if (!CollisionManager.canMoveHere(this, 0)) {
+            // If not, add it to the bucket, update tracked array, and spawn a new Tetromino
+            this.y -= gravity; // Move the Tetromino back to its previous position
             isDisapper = true;
             game.tetrominoBucket.add(this);
+            CollisionManager.createArrayList(game.tetrominoBucket);
+            game.updateTrackedArray(getTrackArrayData());
             game.spawnNewTetromino();
             game.updateNextBlock();
+        }else{
+            if (this.y >= 460 - this.height){
+                System.out.println("You caught me!");
+                this.y = 460-this.height;
+
+                //Add the tetromino to the bucket
+                isDisapper = true;
+                game.tetrominoBucket.add(this);
+
+                // Update the tetromino bucket array and the tracked array
+                CollisionManager.createArrayList(game.tetrominoBucket);
+                game.updateTrackedArray(getTrackArrayData());
+
+                // Spawn a new tetromino and update the next block
+                game.spawnNewTetromino();
+                game.updateNextBlock();
+            }
+        }
+
+
+        aniTick++;
+        if (aniTick >= aniSpeed) {
+                this.y += gravity;
+                aniTick=0;
         }
 
     }
 
 
     public void moveLeft() {
-        this.x -= movement;
+        if(this.x - 1 > 100 && canMoveHere(this, -movement)){
+            this.x -= movement;
+        }
+
     }
 
     public void moveRight() {
-        this.x += movement;
+       if(this.x + 1 < 300 - this.block.getWidth() && canMoveHere(this, movement)){
+           this.x += movement;
+       }
     }
 
     public void moveDown() {
-        this.y += movement;
+        if(this.y + 1 < 460 - this.block.getHeight() && canMoveHere(this, 0) && canMoveDown(this,movement)){
+            this.y += movement;
+        }
+
     }
+
 
     public void transform() {
 

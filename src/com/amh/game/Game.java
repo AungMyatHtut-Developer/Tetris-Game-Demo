@@ -9,9 +9,10 @@ public class Game implements Runnable{
 
     private GamePanel gamePanel;
     private Thread gameThread;
+    private TrackWindow trackWindow;
 
     private final int FPS = 120;
-    private final int UPS = 60;
+    private final int UPS = 120;
 
     public static int TRACK_FPS = 0;
     public static int TRACK_UPS = 0;
@@ -22,6 +23,7 @@ public class Game implements Runnable{
     public static int nexBlock;
 
     public List<Tetromino> tetrominoBucket = new ArrayList<>();
+    public volatile static int[][] tetrominoBucketArray = new int[20][10];
 
     public Game() {
         initTetromino();
@@ -29,12 +31,29 @@ public class Game implements Runnable{
         new GameWindow(gamePanel);
         gamePanel.requestFocus(true);
 
+//        initTrackWindow();
         startGame();
     }
 
+    private void initTrackWindow() {
+        trackWindow = new TrackWindow(gamePanel);
+    }
+
     private void initTetromino() {
-        tetromino = new Tetromino(startX,startY,  Block.Z1, this);
+        tetromino = new Tetromino(startX,startY, parseBlockFromNumber( random.nextInt(6)), this);
         nexBlock = random.nextInt(6);
+    }
+
+    public Block parseBlockFromNumber(int id) {
+        switch (id) {
+            case 0: return Block.L1;
+            case 1: return Block.J1;
+            case 2: return Block.S1;
+            case 3: return Block.Z1;
+            case 4: return Block.O;
+            case 5: return Block.I1;
+            default:return Block.T1;
+        }
     }
 
     private void startGame() {
@@ -52,6 +71,11 @@ public class Game implements Runnable{
 
     public void update() {
         tetromino.update();
+
+    }
+
+    public void updateTrackedArray(StringBuilder data) {
+//        trackWindow.updateTrackedArray(data);
     }
 
     public void spawnNewTetromino() {

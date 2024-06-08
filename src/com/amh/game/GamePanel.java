@@ -70,6 +70,12 @@ public class GamePanel extends JPanel {
     public void drawBorder(Graphics g) {
         g.setColor(Color.BLACK);
         g.fillRect(100,60, 200, 400);
+//        for (int y = 0; y < 20; y++) {
+//            for (int x = 0; x < 10; x++) {
+//                g.setColor(Color.WHITE);
+//                g.drawRect(x*20 + 100, y*20 + 60, 20,20);
+//            }
+//        }
     }
 
     public void showNextBlockPane(Graphics g) {
