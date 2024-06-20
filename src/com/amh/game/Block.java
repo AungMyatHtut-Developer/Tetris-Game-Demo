@@ -117,9 +117,9 @@ public enum Block {
             {0,0,0,0}
     }, 40, 60);
 
-    private final int[][] properties;
-    private final int width;
-    private final int height;
+    private  int[][] properties;
+    private  int width;
+    private  int height;
 
     Block(int[][] properties,int width,int height) {
         this.properties = properties;
@@ -137,6 +137,10 @@ public enum Block {
 
     public int getHeight() {
         return height;
+    }
+
+    public void updateProperty(int[][] newProperties){
+        this.properties = newProperties;
     }
 
 }

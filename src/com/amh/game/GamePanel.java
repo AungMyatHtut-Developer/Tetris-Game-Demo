@@ -108,6 +108,6 @@ public class GamePanel extends JPanel {
 
     public void drawScore(Graphics g) {
         g.setColor(Color.WHITE);
-        g.drawString("score : ", 345, 220);
+        g.drawString("score : "+ Game.score, 345, 220);
     }
 }

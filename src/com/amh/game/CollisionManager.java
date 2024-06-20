@@ -1,7 +1,9 @@
 package com.amh.game;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static com.amh.game.Game.score;
 import static com.amh.game.Game.tetrominoBucketArray;
 
 public class CollisionManager {
@@ -66,8 +68,7 @@ public class CollisionManager {
     }
 
 
-
-    public static void createArrayList(List<Tetromino> bucketList){
+    public static void parseToArray(List<Tetromino> bucketList) {
         for (Tetromino t : bucketList) {
             int[][] blockArray = t.getBlock().getProperties();
             for (int y = 0; y < blockArray.length; y++) {
@@ -76,12 +77,42 @@ public class CollisionManager {
                     if (data == 1) {
 
                         int codY = ((t.getY() - 60) / 20) + y;
-                        int codX = ((t.getX() - 100) / 20) + x  ;
+                        int codX = ((t.getX() - 100) / 20) + x;
 
-                        tetrominoBucketArray[codY][codX] = 1;
+                        if(codY < 20 && codX < 10){
+                            tetrominoBucketArray[codY][codX] = 1;
+                        }
+
                     }
                 }
             }
+        }
+        Game.tetrominoBucket = new ArrayList<>();
+    }
+
+    public static void deleteFullLine(List<Tetromino> bucketList) {
+        int value = 0;
+        for (int y = 0; y < tetrominoBucketArray.length; y++) {
+            for (int x = 0; x < tetrominoBucketArray[y].length; x++) {
+                value += tetrominoBucketArray[y][x];
+
+                if (value == 10) {
+                    for (int i = 0; i < 10; i++) {
+                        tetrominoBucketArray[y][i] = 0;
+                    }
+
+                    for(int deltaY = y; deltaY > 0 ; deltaY--){
+                        for(int deltaX = 0 ; deltaX < 10 ; deltaX++){
+                            tetrominoBucketArray[deltaY][deltaX] = tetrominoBucketArray[deltaY-1][deltaX];
+                        }
+                    }
+                    ++score;
+                }
+
+            }
+
+            System.out.println("Total Value : " + value);
+            value = 0;
         }
     }
 

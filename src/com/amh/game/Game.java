@@ -21,8 +21,9 @@ public class Game implements Runnable{
     private int startX = 140, startY = 60;
     private Random random  = new Random();
     public static int nexBlock;
+    public static int score;
 
-    public List<Tetromino> tetrominoBucket = new ArrayList<>();
+    public static List<Tetromino> tetrominoBucket = new ArrayList<>();
     public volatile static int[][] tetrominoBucketArray = new int[20][10];
 
     public Game() {
@@ -63,9 +64,22 @@ public class Game implements Runnable{
 
     public void render(Graphics g) {
         tetromino.render(g);
+        drawTeromio(g, tetrominoBucketArray);
 
-        for (Tetromino t : tetrominoBucket) {
-            t.drawInBucket(g, t.getBlock(), t.getX(), t.getY());
+    }
+
+    public void drawTeromio(Graphics g, int[][] tetrominoBucketArray){
+
+        for (int y = 0; y < tetrominoBucketArray.length; y++) {
+            for (int x = 0; x < tetrominoBucketArray[y].length; x++) {
+
+                g.setColor(new Color(64,64,64));
+                if (tetrominoBucketArray[y][x] == 1) {
+                    g.fillRect(x * 20 + 100, y * 20 + 60, 20, 20);
+                    g.setColor(Color.white);
+                    g.drawRect(x * 20 + 100, y * 20 + 60, 20, 20);
+                }
+            }
         }
     }
 

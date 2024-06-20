@@ -48,22 +48,6 @@ public class Tetromino {
         }
     }
 
-    public void drawInBucket(Graphics g,Block block,  int xDelta, int yDelta){
-        int[][] properties = block.getProperties();
-        for (int y = 0; y < properties.length; y++) {
-            for (int x = 0; x < properties[y].length; x++) {
-
-                g.setColor(getColorForBlock());
-                if (properties[y][x] == 1) {
-                    g.fillRect(x * 20 + xDelta, y * 20 + yDelta, 20, 20);
-                    g.setColor(Color.white);
-                    g.drawRect(x * 20 + xDelta, y * 20 + yDelta, 20, 20);
-                }
-            }
-        }
-    }
-
-
     public void renderNextBlock(Graphics g, Block block, int xDelta, int yDelta) {
         int[][] properties = block.getProperties();
         for (int y = 0; y < properties.length; y++) {
@@ -145,6 +129,15 @@ public class Tetromino {
 
     public void updatePosition() {
 
+        if(Game.score > 100){
+            aniSpeed = 20;
+        } else if(Game.score > 60){
+            aniSpeed = 30;
+        } else if (Game.score > 40) {
+            aniSpeed = 40;
+        } else if (Game.score > 20) {
+            aniSpeed = 50;
+        }
 
 
         if (this.x <= 100) {
@@ -162,8 +155,10 @@ public class Tetromino {
             this.y -= gravity; // Move the Tetromino back to its previous position
             isDisapper = true;
             game.tetrominoBucket.add(this);
-            CollisionManager.createArrayList(game.tetrominoBucket);
+            CollisionManager.parseToArray(game.tetrominoBucket);
             game.updateTrackedArray(getTrackArrayData());
+
+            deleteFullLine(game.tetrominoBucket);
             game.spawnNewTetromino();
             game.updateNextBlock();
         }else{
@@ -176,9 +171,10 @@ public class Tetromino {
                 game.tetrominoBucket.add(this);
 
                 // Update the tetromino bucket array and the tracked array
-                CollisionManager.createArrayList(game.tetrominoBucket);
+                CollisionManager.parseToArray(game.tetrominoBucket);
                 game.updateTrackedArray(getTrackArrayData());
 
+                deleteFullLine(game.tetrominoBucket);
                 // Spawn a new tetromino and update the next block
                 game.spawnNewTetromino();
                 game.updateNextBlock();
@@ -303,6 +299,10 @@ public class Tetromino {
         }
 
 
+    }
+
+    public void updateBlock(Block block){
+        this.block = block;
     }
 
     public Block getBlock() {
