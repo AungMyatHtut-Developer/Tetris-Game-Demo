@@ -26,7 +26,10 @@ public class Tetromino {
 
 
     public void render(Graphics g) {
-        renderBlock(g);
+        if(!Game.isGamOver){
+            renderBlock(g);
+        }
+
     }
 
     public void renderBlock(Graphics g) {
@@ -151,6 +154,9 @@ public class Tetromino {
 
         // Check if the Tetromino can move down
         if (!CollisionManager.canMoveHere(this, 0)) {
+
+            Game.sound.play(0);
+
             // If not, add it to the bucket, update tracked array, and spawn a new Tetromino
             this.y -= gravity; // Move the Tetromino back to its previous position
             isDisapper = true;
@@ -159,11 +165,15 @@ public class Tetromino {
             game.updateTrackedArray(getTrackArrayData());
 
             deleteFullLine(game.tetrominoBucket);
-            game.spawnNewTetromino();
+                  game.spawnNewTetromino();
             game.updateNextBlock();
+
+
         }else{
             if (this.y >= 460 - this.height){
-                System.out.println("You caught me!");
+
+                Game.sound.play(0);
+
                 this.y = 460-this.height;
 
                 //Add the tetromino to the bucket

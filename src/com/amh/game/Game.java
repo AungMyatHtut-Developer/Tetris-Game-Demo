@@ -2,6 +2,7 @@ package com.amh.game;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -11,11 +12,15 @@ public class Game implements Runnable{
     private Thread gameThread;
     private TrackWindow trackWindow;
 
-    private final int FPS = 120;
-    private final int UPS = 120;
+    private final int FPS = 220;
+    private final int UPS = 220;
 
     public static int TRACK_FPS = 0;
     public static int TRACK_UPS = 0;
+
+    public static boolean isPaused = false;
+    public static boolean isGamOver = false;
+    public static boolean isRestart = false;
 
     private Tetromino tetromino;
     private int startX = 140, startY = 60;
@@ -24,7 +29,12 @@ public class Game implements Runnable{
     public static int score;
 
     public static List<Tetromino> tetrominoBucket = new ArrayList<>();
-    public volatile static int[][] tetrominoBucketArray = new int[20][10];
+    public volatile static int[][] tetrominoBucketArray = new int[21][10];
+
+    public static Sound sound = new Sound();
+    public static Sound GameMusic = new Sound();
+
+    private Rectangle bounds;
 
     public Game() {
         initTetromino();
@@ -32,7 +42,7 @@ public class Game implements Runnable{
         new GameWindow(gamePanel);
         gamePanel.requestFocus(true);
 
-//        initTrackWindow();
+        //initTrackWindow();
         startGame();
     }
 
@@ -41,8 +51,15 @@ public class Game implements Runnable{
     }
 
     private void initTetromino() {
-        tetromino = new Tetromino(startX,startY, parseBlockFromNumber( random.nextInt(6)), this);
-        nexBlock = random.nextInt(6);
+        tetromino = new Tetromino(startX,startY, parseBlockFromNumber( random.nextInt(7)), this);
+        nexBlock = random.nextInt(7);
+        bounds = new Rectangle(500/2 - 60 , 700/2 + 30, 100, 50);
+
+        GameMusic.loop(4);
+    }
+
+    public Rectangle getBonds(){
+        return this.bounds;
     }
 
     public Block parseBlockFromNumber(int id) {
@@ -65,7 +82,6 @@ public class Game implements Runnable{
     public void render(Graphics g) {
         tetromino.render(g);
         drawTeromio(g, tetrominoBucketArray);
-
     }
 
     public void drawTeromio(Graphics g, int[][] tetrominoBucketArray){
@@ -85,7 +101,6 @@ public class Game implements Runnable{
 
     public void update() {
         tetromino.update();
-
     }
 
     public void updateTrackedArray(StringBuilder data) {
@@ -113,7 +128,7 @@ public class Game implements Runnable{
     }
 
     public void updateNextBlock() {
-        nexBlock = random.nextInt(6);
+        nexBlock = random.nextInt(7);
     }
 
     public Tetromino getTetromino() {
@@ -142,34 +157,57 @@ public class Game implements Runnable{
 
         while (true) {
 
-            currentTime = System.nanoTime();
-            if (currentTime - lastCheckedTimeForFPS >= gameFPS) {
-                lastCheckedTimeForFPS = currentTime;
+            if(!isPaused && !isGamOver){
+                currentTime = System.nanoTime();
+                if (currentTime - lastCheckedTimeForFPS >= gameFPS) {
+                    lastCheckedTimeForFPS = currentTime;
+                    gamePanel.repaint();
+                    frames++;
+                }
+
+
+                if (currentTime - lastCheckedTimeForUPS >= gameUPS) {
+                    lastCheckedTimeForUPS = currentTime;
+                    //update Game
+                    update();
+                    updates++;
+                }
+
+                currentTimeToTrackFPSAndUPS = System.nanoTime();
+                if (currentTimeToTrackFPSAndUPS - lastCheckTimeToTrackFPSAndUPS >= 1_000_000_000) {
+                    lastCheckTimeToTrackFPSAndUPS = currentTimeToTrackFPSAndUPS;
+                    System.out.println("FPS : "+ frames + " UPS : "+ updates);
+
+                    TRACK_FPS = frames;
+                    TRACK_UPS = updates;
+                    frames = 0;
+                    updates = 0;
+                }
+            }else{
+                lastCheckedTimeForFPS = System.currentTimeMillis();
+                lastCheckedTimeForUPS = System.currentTimeMillis();
                 gamePanel.repaint();
-                frames++;
             }
-
-
-            if (currentTime - lastCheckedTimeForUPS >= gameUPS) {
-                lastCheckedTimeForUPS = currentTime;
-                //update Game
-                update();
-                updates++;
-            }
-
-            currentTimeToTrackFPSAndUPS = System.nanoTime();
-            if (currentTimeToTrackFPSAndUPS - lastCheckTimeToTrackFPSAndUPS >= 1_000_000_000) {
-                lastCheckTimeToTrackFPSAndUPS = currentTimeToTrackFPSAndUPS;
-                System.out.println("FPS : "+ frames + " UPS : "+ updates);
-
-                TRACK_FPS = frames;
-                TRACK_UPS = updates;
-                frames = 0;
-                updates = 0;
-            }
-
-
         }
+
+    }
+
+
+
+    public void pauseGame(){
+        this.isPaused = !isPaused;
+        sound.play(5);
+    }
+
+    public void restartGame(){
+
+            tetrominoBucketArray = new int[21][10];
+
+            isGamOver = false;
+
+            score = 0;
+            GameMusic.loop(4);
+            nexBlock = random.nextInt(7);
 
     }
 }

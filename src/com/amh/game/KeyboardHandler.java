@@ -22,9 +22,13 @@ public class KeyboardHandler implements KeyListener {
             case KeyEvent.VK_LEFT -> game.getTetromino().moveLeft();
             case KeyEvent.VK_RIGHT -> game.getTetromino().moveRight();
             case KeyEvent.VK_DOWN -> game.getTetromino().moveDown();
-            case KeyEvent.VK_UP -> game.getTetromino().transform();
-
+            case KeyEvent.VK_UP -> {
+                game.getTetromino().transform();
+                Game.sound.play(1);
+            }
+            case KeyEvent.VK_P -> game.pauseGame();
         }
+
     }
 
     @Override

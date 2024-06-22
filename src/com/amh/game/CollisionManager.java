@@ -1,10 +1,10 @@
 package com.amh.game;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static com.amh.game.Game.score;
-import static com.amh.game.Game.tetrominoBucketArray;
+import static com.amh.game.Game.*;
 
 public class CollisionManager {
 
@@ -67,27 +67,50 @@ public class CollisionManager {
         return true;
     }
 
+    public static boolean checkGameOver(){
+        int[] blockArray = tetrominoBucketArray[20];
+        int result = 0;
+        for (int b : blockArray) {
+            result+= b;
+        }
+
+        if (result >= 1) {
+            Game.isGamOver = true;
+            return true;
+        }else{
+            return false;
+        }
+    }
 
     public static void parseToArray(List<Tetromino> bucketList) {
-        for (Tetromino t : bucketList) {
-            int[][] blockArray = t.getBlock().getProperties();
-            for (int y = 0; y < blockArray.length; y++) {
-                for (int x = 0; x < blockArray[y].length; x++) {
-                    int data = blockArray[y][x];
-                    if (data == 1) {
 
-                        int codY = ((t.getY() - 60) / 20) + y;
-                        int codX = ((t.getX() - 100) / 20) + x;
+        try{
+            for (Tetromino t : bucketList) {
+                int[][] blockArray = t.getBlock().getProperties();
+                for (int y = 0; y < blockArray.length; y++) {
+                    for (int x = 0; x < blockArray[y].length; x++) {
+                        int data = blockArray[y][x];
+                        if (data == 1) {
 
-                        if(codY < 20 && codX < 10){
-                            tetrominoBucketArray[codY][codX] = 1;
+                            int codY = ((t.getY() - 60) / 20) + y;
+                            int codX = ((t.getX() - 100) / 20) + x;
+
+                            if((codY < 20)  && codX < 10){
+                                tetrominoBucketArray[codY][codX] = 1;
+                            }
                         }
-
                     }
                 }
             }
+        }catch (Exception e){
+            GameMusic.stop(4);
+            sound.play(3);
+            isGamOver = true;
+
+            tetrominoBucket = new ArrayList<>();
         }
-        Game.tetrominoBucket = new ArrayList<>();
+
+        tetrominoBucket = new ArrayList<>();
     }
 
     public static void deleteFullLine(List<Tetromino> bucketList) {
@@ -106,12 +129,11 @@ public class CollisionManager {
                             tetrominoBucketArray[deltaY][deltaX] = tetrominoBucketArray[deltaY-1][deltaX];
                         }
                     }
+
                     ++score;
                 }
-
             }
 
-            System.out.println("Total Value : " + value);
             value = 0;
         }
     }
