@@ -113,7 +113,7 @@ public class CollisionManager {
         tetrominoBucket = new ArrayList<>();
     }
 
-    public static void deleteFullLine(List<Tetromino> bucketList) {
+    public static void deleteFullLine() {
         int value = 0;
         for (int y = 0; y < tetrominoBucketArray.length; y++) {
             for (int x = 0; x < tetrominoBucketArray[y].length; x++) {
@@ -130,6 +130,7 @@ public class CollisionManager {
                         }
                     }
 
+                    sound.play(2);
                     ++score;
                 }
             }

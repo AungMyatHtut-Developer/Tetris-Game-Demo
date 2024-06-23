@@ -13,7 +13,7 @@ public class Tetromino {
     private boolean isDisapper = false;
 
 
-    public int aniTick, aniSpeed = 60, gravity = 20, movement = 20;
+    public int aniTick, aniSpeed = 100, gravity = 20, movement = 20;
 
     public Tetromino(int x, int y, Block block, Game game) {
         this.x = x;
@@ -133,13 +133,13 @@ public class Tetromino {
     public void updatePosition() {
 
         if(Game.score > 100){
-            aniSpeed = 20;
-        } else if(Game.score > 60){
-            aniSpeed = 30;
-        } else if (Game.score > 40) {
             aniSpeed = 40;
-        } else if (Game.score > 20) {
+        } else if(Game.score > 60){
             aniSpeed = 50;
+        } else if (Game.score > 40) {
+            aniSpeed = 60;
+        } else if (Game.score > 20) {
+            aniSpeed = 80;
         }
 
 
@@ -152,6 +152,7 @@ public class Tetromino {
         }
 
 
+
         // Check if the Tetromino can move down
         if (!CollisionManager.canMoveHere(this, 0)) {
 
@@ -160,14 +161,13 @@ public class Tetromino {
             // If not, add it to the bucket, update tracked array, and spawn a new Tetromino
             this.y -= gravity; // Move the Tetromino back to its previous position
             isDisapper = true;
-            game.tetrominoBucket.add(this);
-            CollisionManager.parseToArray(game.tetrominoBucket);
-            game.updateTrackedArray(getTrackArrayData());
+            Game.tetrominoBucket.add(this);
+            CollisionManager.parseToArray(Game.tetrominoBucket);
+//            game.updateTrackedArray(getTrackArrayData());
 
-            deleteFullLine(game.tetrominoBucket);
-                  game.spawnNewTetromino();
+            deleteFullLine();
+            game.spawnNewTetromino();
             game.updateNextBlock();
-
 
         }else{
             if (this.y >= 460 - this.height){
@@ -178,26 +178,25 @@ public class Tetromino {
 
                 //Add the tetromino to the bucket
                 isDisapper = true;
-                game.tetrominoBucket.add(this);
+                Game.tetrominoBucket.add(this);
 
                 // Update the tetromino bucket array and the tracked array
-                CollisionManager.parseToArray(game.tetrominoBucket);
-                game.updateTrackedArray(getTrackArrayData());
+                CollisionManager.parseToArray(Game.tetrominoBucket);
+//                game.updateTrackedArray(getTrackArrayData());
 
-                deleteFullLine(game.tetrominoBucket);
+                deleteFullLine();
                 // Spawn a new tetromino and update the next block
                 game.spawnNewTetromino();
                 game.updateNextBlock();
             }
-        }
 
+        }
 
         aniTick++;
         if (aniTick >= aniSpeed) {
-                this.y += gravity;
-                aniTick=0;
+            this.y += gravity;
+            aniTick=0;
         }
-
     }
 
 
